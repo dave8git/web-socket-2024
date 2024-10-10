@@ -1,4 +1,5 @@
 const socket = io();
+socket.on('message', ({author, content}) => addMessage(author, content));
 let userName;
 const loginForm = document.querySelector('#welcome-form');
 const messagesSection = document.querySelector('#messages-section');
@@ -8,6 +9,7 @@ const userNameInput = document.querySelector('#username');
 const messageContentInput = document.querySelector('#message-content');
 
 loginForm.addEventListener('submit', login);
+addMessagesForm.addEventListener('submit', sendMessage);
 
 function login(e) {
     e.preventDefault();
@@ -17,6 +19,7 @@ function login(e) {
         userName = enteredUsername;
         loginForm.classList.remove('show');
         messagesSection.classList.add('show');
+        socket.emit('join', userName);
     } else {
         alert('Please enter a username');
     }
@@ -48,5 +51,5 @@ const addMessage = (author, content) => {
         `<h3 class="message__author">${author === userName ? 'You' : author}</h3>
         <div class="message__content"> ${content} </div>`
 
-    messagesList.appendChild(message)
+    messagesList.appendChild(message);
 };
