@@ -1,4 +1,5 @@
-let username;
+const socket = io();
+let userName;
 const loginForm = document.querySelector('#welcome-form');
 const messagesSection = document.querySelector('#messages-section');
 const messagesList = document.querySelector('#messages-list');
@@ -13,7 +14,7 @@ function login(e) {
 
     const enteredUsername = userNameInput.value.trim();
     if (enteredUsername !== '') {
-        username = enteredUsername;
+        userName = enteredUsername;
         loginForm.classList.remove('show');
         messagesSection.classList.add('show');
     } else {
@@ -21,30 +22,31 @@ function login(e) {
     }
 }
 
-addMessagesForm.addEventListener('submit', sendMessage);
-
 function sendMessage(e) {
-    e.preventDefault();
-
-    const enteredMessage = messageContentInput.value.trim();
-    if (enteredMessage !== '') {
-        addMessage(username, enteredMessage);
+    e.preventDefault();  
+    let messageContent = messageContentInput.value;
+    console.log(messageContent);
+    if(messageContent === '') {
+        alert('Please write something?!');
     } else {
-        alert('Wpisz treść wiadomości.')
+        addMessage(userName, messageContent); 
+        socket.emit('message', {author: userName, content: messageContent});
+        messageContentInput.value = '';
     }
 }
 
-function addMessage(author, content) {
+const addMessage = (author, content) => {
     const message = document.createElement('li');
     message.classList.add('message');
     message.classList.add('message--received');
-    if(author === username) message.classList.add('message--self');
-    message.innerHTML = `
-        <h3 class="message__author">${username == author ? 'You' : author}</h3>
-        <div class="message__content">
-            ${content}
-        </div>
-    `;
-    messagesList.appendChild(message);
-}
+    if (author === userName) {
+        message.classList.add('message--self')
+    } else if (author === 'Chat-Bot') {
+        message.classList.add('bot')
+    }
+    message.innerHTML +=
+        `<h3 class="message__author">${author === userName ? 'You' : author}</h3>
+        <div class="message__content"> ${content} </div>`
 
+    messagesList.appendChild(message)
+};
