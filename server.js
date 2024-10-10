@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const messages = [];
+const users = []; 
 const socket = require('socket.io');
 // const socket = io({
 //     autoConnect: false
@@ -28,6 +29,14 @@ io.on('connection', (socket) => {
     });
     socket.on('disconnect', () => { 
         console.log('Oh, socket ' + socket.id + ' has left');
+        const userIndex = users.indexOf(socket.io);
+        users.splice(userIndex, 1);
+        console.log(users);
+    });
+    socket.on('join', (userName) => {
+        console.log('user joined: ', userName);
+        users.push(userName);
+        console.log(users);
     });
     console.log('I\'ve added a listener on message event \n');
 });
