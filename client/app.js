@@ -20,6 +20,7 @@ function login(e) {
         loginForm.classList.remove('show');
         messagesSection.classList.add('show');
         socket.emit('join', userName);
+        socket.emit('welcome', 'Chat-Bot');
     } else {
         alert('Please enter a username');
     }
